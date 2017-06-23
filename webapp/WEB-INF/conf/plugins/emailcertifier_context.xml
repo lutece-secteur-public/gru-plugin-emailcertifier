@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context-3.0.xsd
+       http://www.springframework.org/schema/tx
+       http://www.springframework.org/schema/tx/spring-tx-3.0.xsd">
+
+    <bean id="emailcertifier.certifiableEmailDAO" class="fr.paris.lutece.plugins.emailcertifier.business.CertifiableEmailDAO" />
+
+     <!-- IdentityStore -->
+    <bean id="emailcertifier.identitystore.httpTransport" class="fr.paris.lutece.plugins.identitystore.web.rs.service.IdentityTransportRest">
+        <property name="IdentityStoreEndPoint">
+            <value>http://localhost:8080/lutece/rest/identitystore</value>
+        </property>
+    </bean>       
+    <bean id="emailcertifier.identitystore.service" class="fr.paris.lutece.plugins.identitystore.web.service.IdentityService">
+        <constructor-arg ref="emailcertifier.identitystore.httpTransport"/>
+    </bean>
+    
+    <!-- Provider for NotifyGRU -->
+    <bean id="emailcertifier.certifiableemail.provider-manager" class="fr.paris.lutece.plugins.emailcertifier.service.provider.EmailCertificationProviderManager">
+        <constructor-arg type="java.lang.String" value="emailcertifier.certifiableemail.provider-manager"/>
+    </bean>
+    
+    <!-- Task Validate Email Certification -->
+	<bean id="emailcertifier.taskValidateEmailCertification"
+		class="fr.paris.lutece.plugins.emailcertifier.service.task.ValidateEmailCertificationTask"
+		scope="prototype" />
+	<bean id="emailcertifier.taskTypeValidateEmailCertification"
+		class="fr.paris.lutece.plugins.workflowcore.business.task.TaskType"
+		p:key="taskValidateEmailCertification" p:titleI18nKey="emailcertifier.task_validate_email_certification.title" 
+                p:beanName="emailcertifier.taskValidateEmailCertification" 
+                p:configRequired="false"
+ 		p:taskForAutomaticAction="false" />
+    
+</beans>

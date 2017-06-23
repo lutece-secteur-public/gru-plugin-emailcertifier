@@ -1,0 +1,84 @@
+<div class="row">
+    <div class="col-xs-12 col-sm-12 col-md-12">
+        <div class="box box-primary">
+            <div class="box-header">
+                <h3 class="box-title">#i18n{emailcertifier.ask.certification.title}</h3>
+            </div>
+            <div class="box-body">
+                
+                <div>#i18n{emailcertifier.ask.certification.description}</div>
+                <form id="" class="form-horizontal" method="post" action="jsp/site/Portal.jsp?page=emailcertifier">
+                    
+                    <div class="form-group">
+                        <label for="user_email" >
+                            #i18n{emailcertifier.ask.certification.email}
+                        </label>
+                        <input type="text" id="user_email" name="user_email" value="${user_email!''}" />   
+                        <@messages errors=errors />
+                    </div>
+                    
+                    <button type="submit" class="btn btn-small btn-primary" name="action_startEmailCertification">
+                        #i18n{emailcertifier.ask.certification.ok}
+                    </button>
+                    <button type="submit" class="btn btn-small btn-primary" name="view_cancelEmailCertification">
+                        #i18n{portal.util.labelCancel}
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $.validator.setDefaults({
+    errorElement: "span",
+    errorClass: "help-block",
+    highlight: function (element, errorClass, validClass) {
+        $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element, errorClass, validClass) {
+        $(element).closest('.form-group').removeClass('has-error');
+    },
+    errorPlacement: function (error, element) {
+        if (element.parent('.input-group').length || element.prop('type') === 'checkbox' || element.prop('type') === 'radio') {
+            error.insertAfter(element.parent());
+        } else {
+            error.insertAfter(element);
+        }
+    }
+});
+$( function(){
+
+    jQuery.validator.addMethod("accentCheck", function(value) {
+        return !/[\u00C0-\u00FF]/.test(value); // consists of checking accent
+       
+      }, "Veuillez entrer un mail valide !");
+
+    
+    // validate signup form on keyup and submit
+    $("#createAccount").validate({
+        rules: {
+            email: {
+                required: true,
+                email: true,
+                accentCheck:true
+            }
+        },
+        messages: {
+            
+            email: 
+                {
+                email:"Veuillez entrer un mail valide !",
+                required:"Veuillez entrer un mail !"
+                }
+           
+        }
+    });
+   
+
+    
+    
+});
+
+
+
+</script>
