@@ -44,13 +44,17 @@ import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.IProv
 import fr.paris.lutece.plugins.workflow.modules.notifygru.service.provider.NotifyGruMarker;
 import fr.paris.lutece.plugins.workflowcore.business.resource.ResourceHistory;
 import fr.paris.lutece.portal.service.spring.SpringContextService;
+import fr.paris.lutece.portal.service.util.AppPropertiesService;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import org.apache.commons.lang.StringUtils;
 
 public class EmailCertificationProvider implements IProvider
 {
-
+	// PROPERTY KEY
+	private static final String PROPERTY_SMS_SENDER_NAME = "emailcertifier.gruprovider.sms.sendername";
+	
     private final CertifiableEmail _certifiableEmail;
 
     private final IdentityService _identityService;
@@ -87,6 +91,15 @@ public class EmailCertificationProvider implements IProvider
     }
 
     /**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String provideDemandSubtypeId()
+	{
+		return null;
+	}
+
+	/**
      * {@inheritDoc }
      */
     @Override
@@ -121,6 +134,16 @@ public class EmailCertificationProvider implements IProvider
     {
         return _certifiableEmail.getEmail( );
     }
+
+    /**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public String provideSmsSender()
+	{
+		return AppPropertiesService.getProperty( PROPERTY_SMS_SENDER_NAME );
+	}
+
 
     /**
      * {@inheritDoc }
