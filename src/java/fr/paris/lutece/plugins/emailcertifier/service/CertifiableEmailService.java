@@ -38,8 +38,10 @@ import fr.paris.lutece.plugins.emailcertifier.business.CertifiableEmailHome;
 import fr.paris.lutece.plugins.emailcertifier.util.CertifierConstants;
 import fr.paris.lutece.plugins.identitystore.web.rs.dto.AttributeDto;
 import fr.paris.lutece.plugins.identitystore.web.rs.dto.AuthorDto;
+import fr.paris.lutece.plugins.identitystore.web.rs.dto.CertificateDto;
 import fr.paris.lutece.plugins.identitystore.web.rs.dto.IdentityChangeDto;
 import fr.paris.lutece.plugins.identitystore.web.rs.dto.IdentityDto;
+import fr.paris.lutece.plugins.identitystore.web.service.AuthorType;
 import fr.paris.lutece.plugins.identitystore.web.service.IdentityService;
 import fr.paris.lutece.plugins.workflowcore.service.workflow.WorkflowService;
 import fr.paris.lutece.portal.service.security.UserNotSignedException;
@@ -146,12 +148,14 @@ public class CertifiableEmailService
         
         AuthorDto author = new AuthorDto( );
         author.setApplicationCode( CertifierConstants.PROPERTY_EMAIL_CERTIFIER_APP_CODE );
+        author.setType( AuthorType.TYPE_USER_OWNER.getTypeValue( ) );
+        author.setId( AuthorDto.USER_DEFAULT_ID );
         identityChange.setAuthor( author );
         
         String strErrorMessage = null;
         try
         {
-            IdentityDto identityAfterCertification = _identityService.certifyAttributes( identityChange, CertifierConstants.PROPERTY_EMAIL_CERTIFIER_CODE );
+            IdentityDto identityAfterCertification = _identityService.updateIdentity( identityChange, new HashMap<>( ) );
 
             //Check if certification worked
             AttributeDto attributeEmailAfterCertif = (AttributeDto) identityAfterCertification.getAttributes( ).get( "email" );
@@ -161,6 +165,10 @@ public class CertifiableEmailService
             if ( !strEmailAfterCertif.equals( strEmail ) || !strEmailCertificationCode.equals( CertifierConstants.PROPERTY_EMAIL_CERTIFIER_CODE ) )
             {
                 strErrorMessage = "The certification WS call is ok, but the certification has been rejected";
+                if( attributeEmailAfterCertif.getStatus( ) != null )
+                {
+                	strErrorMessage = strErrorMessage + " with code " + attributeEmailAfterCertif.getStatus( ).getStatusCode( );
+                }
             }
         }
         catch ( Exception e )
@@ -187,6 +195,9 @@ public class CertifiableEmailService
         AttributeDto attribute = new AttributeDto( );
         attribute.setKey( strKey );
         attribute.setValue( strValue );
+        CertificateDto certificateDto = new CertificateDto( );
+        certificateDto.setCertifierCode( CertifierConstants.PROPERTY_EMAIL_CERTIFIER_CODE );
+        attribute.setCertificate( certificateDto );
         map.put( attribute.getKey( ), attribute );
     }
 
